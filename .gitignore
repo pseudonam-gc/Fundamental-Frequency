@@ -1,0 +1,11 @@
+*.DS_Store
+__pycache__/
+bak/
+temp_audio/*.mp3
+!temp_audio/beet.mp3
+!temp_audio/fe.mp3
+!temp_audio/tf.mp3
+temp_images/*.png
+!temp_images/beet.png
+!temp_images/fe.png
+!temp_images/tf.png

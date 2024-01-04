@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="static/graphCanvas.js"></script>
+  <script> 
+    function changeImage(image_name) {
+      fetch ('/click', {
+        method: "POST",
+        body: JSON.stringify({name: image_name}),
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        canvas.style.display = "block";
+        ctx.fillStyle = "#000000";
+        img = new Image();
+        img.src = URL.createObjectURL(blob);
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 800, 600);
+        }
+      }
+    );
+    }
+    function uploadAudio() {
+      fetch ('/upload', {
+        method: "POST",
+        body: document.getElementById("file").files[0]
+      }) 
+      .then(response => response.blob())
+      .then(blob => {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        canvas.style.display = "block";
+        ctx.fillStyle = "#000000";
+        img = new Image();
+        img.src = URL.createObjectURL(blob);
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 800, 600);
+        }
+      })
+    }
+    function uploadPitches() {
+      fetch ('/uploadpitches', {
+        method: "POST",
+        body: document.getElementById("file").files[0]
+      })
+      .then(response => response.json())
+      .then(pitches => {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        canvas.style.display = "block";
+        generateCanvas(ctx, pitches);
+      })
+    }
+  </script>
+  <style>
+    #myCanvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- have a button POST a click via AJAX -->
+<div>
+<!-- <input type="button" value="Change Image" onclick="changeImage();"> -->
+<button type = "button" onclick="changeImage('fe.png')">
+  Fur Elise<!-- <img src ="fe_graph.png" alt="Fur Elise"></img> -->
+</button>
+
+<button type = "button" onclick="changeImage('beet.png')">
+  Beethoven's Fifth
+</button>
+
+<button type = "button" onclick="changeImage('tf.png')">
+  A4 (440 Hz)
+</button>
+
+<!-- <form method="post" enctype="multipart/form-data" action="/upload"> -->
+<!-- <label for="file">File</label> -->
+<label for = "files" class "btn">Select MP3</label>
+<input id="file" name="audio" type="file"/>
+<button onclick="uploadPitches()">Upload</button>
+<!-- </form> -->
+
+<p>hihi</p>
+
+<!-- <img id="image" src="https://picsum.photos/200/300" alt=""> -->
+
+<canvas id = "myCanvas" width = "800" height = "600"> </canvas>
+</body>
+</html>
