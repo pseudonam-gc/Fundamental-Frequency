@@ -3,7 +3,7 @@ import json
 import uuid
 from flask import *
 from flask import render_template 
-from pitches import generateImage
+from pitches import returnPitches
 # creates a Flask application 
 app = Flask(__name__) 
 app.secret_key = os.getenv('AUDI_SECRET_KEY')
@@ -19,7 +19,7 @@ def uploadImage():
     f = request.get_data()
     with open(f'temp_audio/{filename}.mp3', 'wb') as audio:
         audio.write(f)
-    generateImage(filename)
+    returnPitches(filename)
     return send_file(f'temp_images/{filename}.png', mimetype = 'image/png')
 
 @app.route('/uploadpitches', methods = ['POST'])
@@ -28,7 +28,7 @@ def uploadPitches():
     f = request.get_data()
     with open(f'temp_audio/{filename}.mp3', 'wb') as audio:
         audio.write(f)
-    pitches = generateImage(filename)
+    pitches = returnPitches(filename)
     return jsonify(pitches)
 
 @app.route('/click', methods = ['POST'])
