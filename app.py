@@ -38,6 +38,10 @@ def clicked():
     # extract the name from the request
     return send_file(f'static/{data["name"]}', mimetype = 'image/png')
 
+@app.route('/health')
+def health():
+    return "OK"
+
 # run the application 
 if __name__ == "__main__": 
     app.run(debug=True)
