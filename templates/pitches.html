@@ -55,6 +55,15 @@
         generateCanvas(ctx, pitches);
       })
     }
+    function healthZ() {
+      fetch ('/healthz', {
+        method: "GET",
+      })
+      .then(response => response.json())
+      .then(health => {
+        console.log(health);
+      })
+    }
   </script>
   <style>
     #myCanvas {
