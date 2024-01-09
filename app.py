@@ -10,12 +10,18 @@ app.secret_key = os.getenv('AUDI_SECRET_KEY')
 
 @app.route("/") 
 def start(): 
-    return render_template('pitches.html')
+    print (request.host)
+    if request.host == '127.0.0.1:5000':
+        return render_template('pitches.html')
+    elif request.host == 'www.jeffie.com:5000':
+        return render_template('pitches.html')
+    else:
+        return "ok"
+
 
 @app.route('/upload', methods = ['POST'])
 def uploadImage():
     filename = str(uuid.uuid4())
-    print (filename)
     f = request.get_data()
     with open(f'temp_audio/{filename}.mp3', 'wb') as audio:
         audio.write(f)
@@ -28,6 +34,15 @@ def uploadPitches():
     f = request.get_data()
     with open(f'temp_audio/{filename}.mp3', 'wb') as audio:
         audio.write(f)
+    pitches = returnPitches(filename)
+    return jsonify(pitches)
+
+@app.route('/uploadpitchesnamed', methods = ['POST'])
+def uploadPitchesNamed():
+    data = request.get_data()
+    data = json.loads(data.decode("utf-8"))
+    filename = data["name"]
+    print (filename)
     pitches = returnPitches(filename)
     return jsonify(pitches)
 

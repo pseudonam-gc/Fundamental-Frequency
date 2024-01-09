@@ -10,13 +10,17 @@ var lowestX = graphMinX; // the furthest left point aligns with the left edge of
 var highestX = graphMaxX-50; // the furthest right point does not align, for mouseover reasons
 var graphMinY = 50;
 var graphMaxY = 550;
-var lowestY = graphMinY + 25; 
-var highestY = graphMaxY - 25;
+var lowestY = graphMinY;// + 25; 
+var highestY = graphMaxY;// - 25;
 
 // list all notes from A1 to G#8
 var notes = [];
 var noteValues = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
                   "F#", "G", "G#"];
+
+var lowestPitch = -1;
+var highestPitch = -1;
+var maxTime = -1;
 
 // colors is a dict mapping note names to colors
 var colors = {};
@@ -94,10 +98,10 @@ function generateCanvas(ctx, pitches) {
     ctx.fillStyle = "#000000";
     ctx.arc(graphMinX, graphMaxY, 3, 0, 2 * Math.PI);
     ctx.fill();
-    var maxTime = Math.max(...timeArray);
+    maxTime = Math.max(...timeArray);
     
-    var lowestPitch = pitchValue(Math.min(...pitchArray));
-    var highestPitch = pitchValue(Math.max(...pitchArray));
+    lowestPitch = pitchValue(Math.min(...pitchArray));
+    highestPitch = pitchValue(Math.max(...pitchArray));
     
     var lowestNote = Math.floor(lowestPitch-0.5)+0.5;
     var highestNote = Math.floor(highestPitch-0.5)+1.5;
@@ -113,13 +117,19 @@ function generateCanvas(ctx, pitches) {
         var pitch = pitchToNote(Math.pow(2, (i-0.5)/12) * 440);
         ctx.fillStyle = colors[pitch.substring(0, pitch.length-1)];
         ctx.beginPath();
-        ctx.fillRect(graphMinX, y_old, graphMaxX-graphMinX, y - y_old);
-        // divider line
-        ctx.fillStyle = "#AAAAAA";
-        ctx.beginPath();
-        ctx.moveTo(graphMinX, y);
-        ctx.lineTo(graphMinX + graphMaxX, y);
-        ctx.stroke();
+        // log y, y_old
+        console.log(y, y_old);
+        if (y > graphMinY) {
+            ctx.fillRect(graphMinX, Math.min(y_old, graphMaxY), graphMaxX-graphMinX, y - Math.min(y_old, graphMaxY));
+            ctx.fillStyle = "#AAAAAA";
+            ctx.beginPath();
+            ctx.moveTo(graphMinX, y);
+            ctx.lineTo(graphMinX + graphMaxX, y);
+            ctx.stroke();
+        } else {
+            ctx.fillRect(graphMinX, Math.min(y_old, graphMaxY), graphMaxX-graphMinX, graphMinY - Math.min(y_old, graphMaxY));
+        }
+       
     }
 
     ctx.font = "12px Arial";
@@ -141,4 +151,17 @@ function generateCanvas(ctx, pitches) {
 
     console.log("done drawing points");
 
+}
+
+function handleMouseMove(event) {
+    if (Math.min(lowestPitch, highestPitch, maxTime) == -1) {
+        return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    const coordinatesElement = document.getElementById("coordinates");
+    var time = (mouseX - graphMinX) / (graphMaxX - graphMinX) * maxTime;
+    var pitch = Math.pow(2, 12 * (highestY - mouseY) / (highestY - lowestY)) * 440;
+    coordinatesElement.textContent = "Time: " + time + ", Pitch: " + pitch;
 }

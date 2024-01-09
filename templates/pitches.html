@@ -5,25 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="static/graphCanvas.js"></script>
   <script> 
-    function changeImage(image_name) {
-      fetch ('/click', {
-        method: "POST",
-        body: JSON.stringify({name: image_name}),
-      })
-      .then(response => response.blob())
-      .then(blob => {
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
-        canvas.style.display = "block";
-        ctx.fillStyle = "#000000";
-        img = new Image();
-        img.src = URL.createObjectURL(blob);
-        img.onload = function() {
-          ctx.drawImage(img, 0, 0, 800, 600);
-        }
-      }
-    );
-    }
     function uploadAudio() {
       fetch ('/upload', {
         method: "POST",
@@ -33,6 +14,7 @@
       .then(blob => {
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.style.display = "block";
         ctx.fillStyle = "#000000";
         img = new Image();
@@ -49,10 +31,33 @@
       })
       .then(response => response.json())
       .then(pitches => {
+        var viewing = document.getElementById("viewing");
+        viewing.textContent = "Processing audio...";
+
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.style.display = "block";
         generateCanvas(ctx, pitches);
+        viewing.textContent = "Viewing " + document.getElementById("file").files[0].name;
+      })
+    }
+    function uploadPitchesNamed(filename) {
+      fetch ('/uploadpitchesnamed', {
+        method: "POST",
+        body: JSON.stringify({name: filename}),
+      })
+      .then(response => response.json())
+      .then(pitches => {
+        var viewing = document.getElementById("viewing");
+        viewing.textContent = "Processing audio...";
+
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = "block";
+        generateCanvas(ctx, pitches);
+        viewing.textContent = "Viewing " + filename + ".mp3";
       })
     }
   </script>
@@ -65,31 +70,37 @@
 <body>
 
 <!-- have a button POST a click via AJAX -->
-<div>
-<!-- <input type="button" value="Change Image" onclick="changeImage();"> -->
-<button type = "button" onclick="changeImage('fe.png')">
-  Fur Elise<!-- <img src ="fe_graph.png" alt="Fur Elise"></img> -->
+<h2>Fundamental Frequency Finder</h2>
+<p>Upload an MP3 file or select one of the buttons to graph the fundamental frequencies for the first 4-5 seconds. The fundamental frequency is the lowest pitch recognized, so this program not perform well with multiple notes or instruments playing simultaneously.</p>
+<button type = "button" onclick="uploadPitchesNamed('fe')">
+  Fur Elise
 </button>
-
-<button type = "button" onclick="changeImage('beet.png')">
+<button type = "button" onclick="uploadPitchesNamed('beet')">
   Beethoven's Fifth
 </button>
-
-<button type = "button" onclick="changeImage('tf.png')">
+<button type = "button" onclick="uploadPitchesNamed('tf')">
   A4 (440 Hz)
 </button>
+<br>
+<br>
 
-<!-- <form method="post" enctype="multipart/form-data" action="/upload"> -->
-<!-- <label for="file">File</label> -->
 <label for = "files" class "btn">Select MP3</label>
 <input id="file" name="audio" type="file"/>
 <button onclick="uploadPitches()">Upload</button>
-<!-- </form> -->
 
-<p>hihi</p>
-
-<!-- <img id="image" src="https://picsum.photos/200/300" alt=""> -->
+<p id="viewing">Awaiting file choice.</p>
 
 <canvas id = "myCanvas" width = "800" height = "600"> </canvas>
+
+<div id="coordinates"></div>
+<script>
+const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.addEventListener("mousemove", handleMouseMove);
+</script>
 </body>
+
+<p>Audio files were taken from various open source sites. </p>
+
 </html>
