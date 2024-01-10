@@ -10,14 +10,7 @@ app.secret_key = os.getenv('AUDI_SECRET_KEY')
 
 @app.route("/") 
 def start(): 
-    print (request.host)
-    if request.host == '127.0.0.1:5000':
-        return render_template('pitches.html')
-    elif request.host == 'www.jeffie.com:5000':
-        return render_template('pitches.html')
-    else:
-        return "ok"
-
+    return render_template('pitches.html')
 
 @app.route('/upload', methods = ['POST'])
 def uploadImage():
