@@ -44,14 +44,18 @@ for (var i = 1; i <= 8; i++) {
     }
 }
 
-function pitchValue(pitch) { // maps pitch to a given value
+function pitchToValue(pitch) { // maps pitch to a given value
     // 440 = A4 maps to 0. B4 maps to 1, G#3 maps to -1, A5 maps to 12, etc.
     return Math.log2(pitch / 440) * 12;
 }
 
+function valueToPitch(value) { // maps a given value to a pitch
+    return Math.pow(2, value / 12) * 440;
+}
+
 function pitchToNote(pitch) {
-    var value = pitchValue(pitch);
-    var note = notes[Math.round(value) + 21];
+    var value = pitchToValue(pitch);
+    var note = notes[Math.round(value) + 36];
     return note;
 }
 
@@ -62,10 +66,18 @@ function timeToX(time, maxTime) { // returns the x position of a given time
 }
 
 function pitchToY(pitch, lower, upper) { // returns the y position of a given pitch
-    var value = pitchValue(pitch);
+    var value = pitchToValue(pitch);
     var actualY = (value - lower) / (upper - lower);
     var y = highestY - (highestY - lowestY) * actualY;
     return y;
+}
+
+function YToPitch(y, lower, upper) { // returns the pitch of a given y position
+    var YRatio = (highestY - y) / (highestY - lowestY);
+    var YValue = YRatio * (upper - lower) + lower;
+    console.log(YValue);
+    var pitch = valueToPitch(YValue);
+    return pitch;
 }
 
 function generateCanvas(ctx, pitches) {
@@ -100,8 +112,8 @@ function generateCanvas(ctx, pitches) {
     ctx.fill();
     maxTime = Math.max(...timeArray);
     
-    lowestPitch = pitchValue(Math.min(...pitchArray));
-    highestPitch = pitchValue(Math.max(...pitchArray));
+    lowestPitch = pitchToValue(Math.min(...pitchArray));
+    highestPitch = pitchToValue(Math.max(...pitchArray));
     
     var lowestNote = Math.floor(lowestPitch-0.5)+0.5;
     var highestNote = Math.floor(highestPitch-0.5)+1.5;
@@ -111,9 +123,7 @@ function generateCanvas(ctx, pitches) {
         ctx.lineWidth = 2;
         var y = pitchToY(Math.pow(2, i/12) * 440, lowestPitch, highestPitch);
         var y_old = pitchToY(Math.pow(2, (i-1)/12) * 440, lowestPitch, highestPitch);
-
         // create rectangle from y_old to y
-        
         var pitch = pitchToNote(Math.pow(2, (i-0.5)/12) * 440);
         ctx.fillStyle = colors[pitch.substring(0, pitch.length-1)];
         ctx.beginPath();
@@ -139,7 +149,7 @@ function generateCanvas(ctx, pitches) {
         actualX = actualX / maxTime;
         var x = lowestX + (highestX - lowestX) * actualX;
         // scale pitchesX, pitchesY into a [0, 1] range
-        //var actualY = pitchValue(pitchArray[i]);
+        //var actualY = pitchToValue(pitchArray[i]);
         //actualY = (actualY - lowestPitch) / (highestPitch - lowestPitch);
         // var y = highestY - (highestY - lowestY) * actualY;
         var y = pitchToY(pitchArray[i], lowestPitch, highestPitch);
@@ -148,8 +158,6 @@ function generateCanvas(ctx, pitches) {
         ctx.fill();
         ctx.fillText(pitchToNote(pitchArray[i]), x, y - 10);
     }
-
-    console.log("done drawing points");
 
 }
 
@@ -162,6 +170,9 @@ function handleMouseMove(event) {
     const mouseY = event.clientY - rect.top;
     const coordinatesElement = document.getElementById("coordinates");
     var time = (mouseX - graphMinX) / (graphMaxX - graphMinX) * maxTime;
-    var pitch = Math.pow(2, 12 * (highestY - mouseY) / (highestY - lowestY)) * 440;
+    var pitch = YToPitch(mouseY, lowestPitch, highestPitch);
+    // round to 2 decimal places
+    time = Math.round(time * 100) / 100;
+    pitch = Math.round(pitch * 100) / 100;
     coordinatesElement.textContent = "Time: " + time + ", Pitch: " + pitch;
 }
