@@ -17,3 +17,10 @@ $ python3 app.py
 
 ### Screenshots
 
+#### Fur Elise
+
+![Fur Elise](docs/images/fur_elise.png)
+
+#### A4 Tuning Fork (440 Hz)
+
+![A4](docs/images/a4.png)
