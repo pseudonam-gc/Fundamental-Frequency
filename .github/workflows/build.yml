@@ -26,5 +26,5 @@ jobs:
           tags: pseudonam/audi:latest  # Replace with your image name and tag
 
       - name: Curl to Render hook
-        run: curl https://api.render.com/deploy/srv-cmct43g21fec73cugqtg?key=02mh7sZZrVE
+        run: curl ${{ secrets.RENDER_HOOK }}
     
