@@ -23,6 +23,8 @@ def pitch_acf(data, sampling_frequency, time): # uses autocorrelation to find pi
     if step*time+frame_size >= len(data):
         raise IndexError
     data = data[step*time:step*time+frame_size] # find the data in the relevant timerame
+    if sum(data) == 0:
+        raise ValueError
     auto = sm.tsa.acf(data, nlags=frame_size) # calculate autocorrelation
     peaks = find_peaks(auto)[0] # Find peaks of the autocorrelation
 
@@ -60,6 +62,8 @@ def returnPitches(filename, durationLimit=5):
                 break
         except IndexError:
             break
+        except ValueError:
+            continue
 
     # plots pitches, but this feature will be unused as we will be returning the pitches instead
     fig, ax = plt.subplots()

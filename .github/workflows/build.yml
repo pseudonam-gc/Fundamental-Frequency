@@ -24,8 +24,3 @@ jobs:
           file: ./Dockerfile  # Specify Dockerfile name if not in root
           push: true
           tags: pseudonam/audi:latest  # Replace with your image name and tag
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

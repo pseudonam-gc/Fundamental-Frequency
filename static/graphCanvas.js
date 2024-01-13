@@ -147,10 +147,6 @@ function generateCanvas(ctx, pitches) {
         var actualX = timeArray[i];
         actualX = actualX / maxTime;
         var x = lowestX + (highestX - lowestX) * actualX;
-        // scale pitchesX, pitchesY into a [0, 1] range
-        //var actualY = pitchToValue(pitchArray[i]);
-        //actualY = (actualY - lowestPitch) / (highestPitch - lowestPitch);
-        // var y = highestY - (highestY - lowestY) * actualY;
         var y = pitchToY(pitchArray[i], lowestPitch, highestPitch);
         ctx.beginPath();
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
@@ -171,7 +167,11 @@ function handleMouseMove(event) {
     var time = (mouseX - graphMinX) / (graphMaxX - graphMinX) * maxTime;
     var pitch = YToPitch(mouseY, lowestPitch, highestPitch);
     // round to 2 decimal places
-    time = Math.round(time * 100) / 100;
-    pitch = Math.round(pitch * 100) / 100;
+    time = (Math.round(time * 100) / 100).toFixed(2);
+    pitch = (Math.round(pitch * 100) / 100).toFixed(2);
+    if (mouseX < graphMinX || mouseX > graphMaxX || mouseY < graphMinY || mouseY > graphMaxY) {
+        coordinatesElement.textContent = "Put your cursor on the graph to enable coordinate tracking.";
+        return;
+    }
     coordinatesElement.textContent = "Time: " + time + ", Pitch: " + pitch;
 }
