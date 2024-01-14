@@ -1,5 +1,9 @@
 ## Fundamental Frequency Finder 
 
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/pseudonam-gc/fundamental-frequency)
+![GitHub repo size](https://img.shields.io/github/repo-size/pseudonam-gc/Fundamental-Frequency)
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/pseudonam/audi/latest)
+
 Demo URL: [https://fundfrequency.kiok.org/](https://fundfrequency.kiok.org/)
 
 This project's goal is to find the fundamental frequencies of a given audio file, which is the lowest pitch detected. Autocorrelation is the primary function used, but other options may be added in the future for comparison and contrast. The frequencies of each timestamp are then plotted on a logarithmic graph, which also displays the estimated note values at each given time. There are three given examples, but users can also upload their own MP3s. 
